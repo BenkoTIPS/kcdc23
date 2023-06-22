@@ -1,10 +1,68 @@
 ﻿@page
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Config
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Welcome <b>@Config["EnvName"]</b> </h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <b>Machine:</b> @System.Environment.MachineName
+    | <b>OS:</b> @System.Environment.OSVersion
+    | <b>Framework:</b> @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
 </div>
+
+<h2 class='alert fw-bold' style='background-color:@Config["FavoriteColor"]' id='joke'></h2>
+
+<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+<script $ type='text/javascript'>
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: 'https://icanhazdadjoke.com',
+            dataType: 'json',
+            success: function (msg) {
+                $('#joke').html(msg.joke);
+            },
+            error: function (request, status, error) {
+                $('#joke').html('Error getting joke');
+            }
+        });
+    });
+</script>
+
+
+
+<form method="get">
+<div class='input-group mb-3'>
+    <h2>Weather API:&nbsp;</h2>
+    <input class="form-control" type="text" name="url" value='@Config["ApiUrl"]'></input>
+    <input class="btn btn-primary" type="submit" value="go"></input>
+</div>
+    @if (@Model.Forecasts != null)
+    {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in @Model.Forecasts)
+            {
+                <tr>
+                    <td>@forecast.date.ToShortDateString()</td>
+                    <td>@forecast.temperatureC</td>
+                    <td>@forecast.temperatureF</td>
+                    <td>@forecast.summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+</form>

@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  kcdcWeb:
+  image: kcdcweb:v0.1
+  ports:
+    - 5100:80
+  environment:
+    - EnvName=DockerCompose
+    - ApiUrl=http://kcdcApi/weatherforecast
+  depends_on:
+    - kcdcApi
+
+  kcdcApi:
+  image: kcdcapi:v0.1
+  ports:
+    - 5200:80
